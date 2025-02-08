@@ -16,7 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $ECR_REPO:latest -f app/Dockerfile app/'
+                    sh 'docker build -t 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest -f app/Dockerfile app/'
                 }
             }
         }
