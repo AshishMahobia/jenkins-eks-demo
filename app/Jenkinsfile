@@ -33,7 +33,14 @@ pipeline {
         stage('Deploy to EKS') {
             steps {
                 script {
-                    sh 'kubectl apply -f app/k8s-deployment.yaml'
+                     // Authenticate with AWS EKS
+            sh 'aws eks update-kubeconfig --region us-east-1 --name my-cluster'
+
+            // Verify cluster access
+            sh 'kubectl get nodes'
+
+            // Deploy application
+            sh 'kubectl apply -f app/k8s-deployment.yaml --validate=false'
                 }
             }
         }
