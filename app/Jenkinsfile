@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        ECR_REPO = "442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo"
+        AWS_REGION = "us-east-1"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/AshishMahobia/jenkins-eks-demo.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t $ECR_REPO:latest .'
+                }
+            }
+        }
+
+        stage('Push to AWS ECR') {
+            steps {
+                script {
+                    sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo'
+                    sh 'docker tag my-app-repo:latest 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest'
+                    sh 'docker push 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest'
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    sh 'kubectl apply -f k8s-deployment.yaml'
+                }
+            }
+        }
+    }
+}
