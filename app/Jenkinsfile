@@ -25,7 +25,6 @@ pipeline {
             steps {
                 script {
                     sh 'aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo'
-                    sh 'docker tag my-app-repo:latest 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest'
                     sh 'docker push 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest'
                 }
             }
