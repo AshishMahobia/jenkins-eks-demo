@@ -15,6 +15,7 @@ spec:
       containers:
       - name: my-app
         image: 442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest
+        imagePullPolicy: Always  # 🔹 Ensures the latest image is always pulled
         ports:
         - containerPort: 3000
 ---
