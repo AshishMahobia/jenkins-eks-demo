@@ -4,7 +4,7 @@ pipeline {
     environment {
         ECR_REPO = "442426870084.dkr.ecr.us-east-1.amazonaws.com/my-app-repo"
         AWS_REGION = "us-east-1"
-        NEW_TAG = "${env.BUILD_NUMBER}"  // 🔹 Generate a unique tag using Jenkins build number
+        NEW_TAG = "${env.BUILD_NUMBER}"  // Use Jenkins build number for a unique tag
     }
 
     stages {
@@ -40,11 +40,14 @@ pipeline {
                     // Verify cluster access
                     sh 'kubectl get nodes'
 
+                    // 🔹 Apply Kubernetes manifests first to ensure deployment exists
+                    sh 'kubectl apply -f app/k8s-deployment.yaml --validate=false'
+
                     // 🔹 Update Deployment with new image tag
                     sh 'kubectl set image deployment/my-app my-app=$ECR_REPO:$NEW_TAG --record'
 
-                    // Apply Kubernetes manifests (if needed)
-                    sh 'kubectl apply -f app/k8s-deployment.yaml --validate=false'
+                    // Wait for deployment to roll out successfully
+                    sh 'kubectl rollout status deployment/my-app'
                 }
             }
         }
